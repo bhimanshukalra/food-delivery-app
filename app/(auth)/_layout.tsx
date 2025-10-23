@@ -1,10 +1,24 @@
-import { images } from '@/constants';
-import { Slot } from 'expo-router';
-import React from 'react';
-import { Dimensions, Image, ImageBackground, KeyboardAvoidingView, Platform, ScrollView, View } from 'react-native';
+import { images } from "@/constants";
+import useAuthStore from "@/store/auth.store";
+import { Redirect, Slot } from "expo-router";
+import React from "react";
+import {
+  Dimensions,
+  Image,
+  ImageBackground,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  View,
+} from "react-native";
 
-export default function _layout() {
-  const imageBackgroundParentHeight = Dimensions.get("screen").height / 2.25
+export default function Authlayout() {
+  const imageBackgroundParentHeight = Dimensions.get("screen").height / 2.25;
+  const { isAuthenticated } = useAuthStore();
+
+  if (isAuthenticated) {
+    return <Redirect href="/" />;
+  }
 
   return (
     <KeyboardAvoidingView

@@ -92,11 +92,13 @@ export const getCurrentUser = async () => {
       tableId: appwriteConfig.userTableId,
       queries: [Query.equal("accountId", currentAccount.$id)],
     });
+
     if (!currentUser || currentUser.total === 0) {
       throw Error("No user found");
     }
     return currentUser.rows[0];
   } catch (error) {
+    console.error("getCurrentUser error", error);
     throw Error(error as string);
   }
 };

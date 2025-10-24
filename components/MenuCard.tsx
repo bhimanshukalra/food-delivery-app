@@ -1,4 +1,5 @@
 import { MenuItem } from "@/app/(tabs)/search";
+import { useCartStore } from "@/store/cart.store";
 import React from "react";
 import {
   Image,
@@ -13,8 +14,14 @@ interface MenuCardProps {
 }
 
 const MenuCard = ({ item }: MenuCardProps) => {
-  const { name, price, image_url } = item;
+  const { $id, name, price, image_url } = item;
   const imageSource = { uri: image_url };
+
+  const { addItem } = useCartStore();
+
+  const handleOnPressAdd = () => {
+    addItem({ id: $id, name, price, image_url, customizations: [] });
+  };
 
   return (
     <TouchableOpacity className="menu-card" style={styles.card}>
@@ -30,7 +37,7 @@ const MenuCard = ({ item }: MenuCardProps) => {
         {name}
       </Text>
       <Text className="body-regular text-gray-200 mb-4">From ${price}</Text>
-      <TouchableOpacity onPress={() => {}}>
+      <TouchableOpacity onPress={handleOnPressAdd}>
         <Text className="paragraph-bold text-primary">Add to card+</Text>
       </TouchableOpacity>
     </TouchableOpacity>

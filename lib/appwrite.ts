@@ -1,9 +1,12 @@
+import { Category } from "@/components/Filter";
 import {
   Account,
   Avatars,
   Client,
+  Databases,
   ID,
   Query,
+  Storage,
   TablesDB,
 } from "react-native-appwrite";
 
@@ -13,6 +16,13 @@ export const appwriteConfig = {
   platform: process.env.EXPO_PUBLIC_APPWRITE_PLATFORM ?? "",
   databaseId: process.env.EXPO_PUBLIC_APPWRITE_DATABSE_ID ?? "",
   userTableId: process.env.EXPO_PUBLIC_APPWRITE_USER_TABLE_ID ?? "",
+  categoriesTableId: process.env.EXPO_PUBLIC_APPWRITE_CATEGORIES_TABLE_ID ?? "",
+  menuTableId: process.env.EXPO_PUBLIC_APPWRITE_MENU_TABLE_ID ?? "",
+  customizationsTableId:
+    process.env.EXPO_PUBLIC_APPWRITE_CUSTOMIZATIONS_TABLE_ID ?? "",
+  menuCustomizationsTableId:
+    process.env.EXPO_PUBLIC_APPWRITE_MENU_CUSTOMIZATIONS_TABLE_ID ?? "",
+  bucketId: process.env.EXPO_PUBLIC_APPWRITE_BUCKET_ID ?? "",
 };
 
 export const client = new Client()
@@ -22,7 +32,9 @@ export const client = new Client()
 
 export const account = new Account(client);
 export const tables = new TablesDB(client);
+export const databases = new Databases(client);
 export const avatars = new Avatars(client);
+export const storage = new Storage(client);
 
 interface CreateuserParams {
   email: string;
@@ -99,6 +111,47 @@ export const getCurrentUser = async () => {
     return currentUser.rows[0];
   } catch (error) {
     console.error("getCurrentUser error", error);
+    throw Error(error as string);
+  }
+};
+
+interface GetMenuParams {
+  category?: string;
+  query?: string;
+}
+
+export const getMenu = async ({ category, query }: GetMenuParams) => {
+  try {
+    const queries: string[] = [];
+
+    if (category) {
+      queries.push(Query.equal("categories", category));
+    }
+    if (query) {
+      queries.push(Query.search("name", query));
+    }
+
+    const menu = await tables.listRows({
+      databaseId: appwriteConfig.databaseId,
+      tableId: appwriteConfig.menuTableId,
+      queries,
+    });
+
+    return menu.rows;
+  } catch (error) {
+    throw Error(error as string);
+  }
+};
+
+export const getCategories = async ({ category, query }: GetMenuParams) => {
+  try {
+    const categories = await tables.listRows({
+      databaseId: appwriteConfig.databaseId,
+      tableId: appwriteConfig.categoriesTableId,
+    });
+
+    return categories.rows as unknown as Category[];
+  } catch (error) {
     throw Error(error as string);
   }
 };
